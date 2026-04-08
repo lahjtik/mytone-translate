@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mytone Translate</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 380px;
+      min-height: 500px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1e1e2e 0%, #2d2d44 100%);
+      color: #ffffff;
+      padding: 16px;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .logo {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6, #ec4899);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .title {
+      flex: 1;
+    }
+
+    .title h1 {
+      font-size: 18px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #818cf8, #c084fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .title p {
+      font-size: 11px;
+      color: #94a3b8;
+    }
+
+    .lang-toggle {
+      background: rgba(255,255,255,0.1);
+      border: none;
+      color: #94a3b8;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .lang-toggle:hover {
+      background: rgba(255,255,255,0.15);
+      color: #fff;
+    }
+
+    .section {
+      margin-bottom: 14px;
+    }
+
+    .section-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: #94a3b8;
+      margin-bottom: 8px;
+    }
+
+    .tones {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .tone-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.2s;
+      background: rgba(255,255,255,0.08);
+      color: #cbd5e1;
+    }
+
+    .tone-btn:hover {
+      background: rgba(255,255,255,0.12);
+    }
+
+    .tone-btn.active {
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    }
+
+    .tone-btn span {
+      font-size: 14px;
+    }
+
+    .textarea-container {
+      position: relative;
+    }
+
+    textarea {
+      width: 100%;
+      height: 100px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 12px;
+      color: #fff;
+      font-size: 14px;
+      resize: none;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    textarea:focus {
+      border-color: #6366f1;
+    }
+
+    textarea::placeholder {
+      color: #64748b;
+    }
+
+    .char-count {
+      position: absolute;
+      bottom: 8px;
+      right: 12px;
+      font-size: 10px;
+      color: #64748b;
+    }
+
+    .target-lang {
+      width: 100%;
+      padding: 10px 12px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 13px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .target-lang option {
+      background: #1e1e2e;
+    }
+
+    .transform-btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6, #ec4899);
+      border: none;
+      border-radius: 10px;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .transform-btn:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+    }
+
+    .transform-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .loading {
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .result-container {
+      margin-top: 14px;
+    }
+
+    .result-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .result-text {
+      width: 100%;
+      min-height: 100px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #e2e8f0;
+      white-space: pre-wrap;
+    }
+
+    .copy-btn {
+      background: rgba(99, 102, 241, 0.2);
+      border: none;
+      color: #818cf8;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .copy-btn:hover {
+      background: rgba(99, 102, 241, 0.3);
+    }
+
+    .error {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 8px;
+      padding: 12px;
+      color: #fca5a5;
+      font-size: 13px;
+      margin-top: 12px;
+    }
+
+    .success-msg {
+      color: #4ade80;
+      font-size: 12px;
+      margin-top: 8px;
+      text-align: center;
+    }
+<div style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed rgba(255,255,255,0.1);">
+  <input type="password" id="apiKeyInput" placeholder="Enter Groq API Key" 
+         style="width: 70%; padding: 5px; background: rgba(0,0,0,0.2); border: 1px solid #444; color: #fff; font-size: 10px; border-radius: 4px;">
+  <button id="saveKeyBtn" style="padding: 5px 10px; font-size: 10px; cursor: pointer; background: #6366f1; color: white; border: none; border-radius: 4px;">Save</button>
+</div>
+    
+    .footer {
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      text-align: center;
+      font-size: 11px;
+      color: #64748b;
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="logo">✨</div>
+    <div class="title">
+      <h1>Mytone Translate</h1>
+      <p id="subtitle">مترجم النبرة</p>
+    </div>
+    <button class="lang-toggle" id="langToggle">EN</button>
+  </header>
+
+  <section class="section">
+    <div class="section-title" id="toneTitle">اختر النبرة:</div>
+    <div class="tones" id="tones">
+      <button class="tone-btn active" data-tone="professional">
+        <span>💼</span> <span id="tone1">احترافي</span>
+      </button>
+      <button class="tone-btn" data-tone="friendly">
+        <span>😊</span> <span id="tone2">ودود</span>
+      </button>
+      <button class="tone-btn" data-tone="enthusiastic">
+        <span>🚀</span> <span id="tone3">متحمس</span>
+      </button>
+      <button class="tone-btn" data-tone="diplomatic">
+        <span>🤝</span> <span id="tone4">دبلوماسي</span>
+      </button>
+      <button class="tone-btn" data-tone="direct">
+        <span>⚡</span> <span id="tone5">مباشر</span>
+      </button>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-title" id="langLabel">اللغة المطلوبة:</div>
+    <select class="target-lang" id="targetLang">
+      <option value="auto">تحديد تلقائي</option>
+      <option value="en">English</option>
+      <option value="ar">العربية</option>
+      <option value="es">Español</option>
+      <option value="fr">Français</option>
+      <option value="de">Deutsch</option>
+      <option value="it">Italiano</option>
+      <option value="pt">Português</option>
+      <option value="zh">中文</option>
+      <option value="ja">日本語</option>
+      <option value="ko">한국어</option>
+      <option value="ru">Русский</option>
+      <option value="hi">हिन्दी</option>
+      <option value="tr">Türkçe</option>
+    </select>
+  </section>
+
+  <section class="section">
+    <div class="section-title" id="inputLabel">اكتب رسالتك:</div>
+    <div class="textarea-container">
+      <textarea id="inputText" placeholder="مثال: i want to talk about project..." maxlength="500"></textarea>
+      <span class="char-count"><span id="charCount">0</span>/500</span>
+    </div>
+  </section>
+
+  <button class="transform-btn" id="transformBtn" disabled>
+    <span>✨</span>
+    <span id="btnText">حوّل الآن</span>
+  </button>
+
+  <div class="result-container" id="resultContainer" style="display: none;">
+    <div class="result-header">
+      <div class="section-title" id="resultLabel">النتيجة:</div>
+      <button class="copy-btn" id="copyBtn">
+        <span>📋</span> <span id="copyText">نسخ</span>
+      </button>
+    </div>
+    <div class="result-text" id="resultText"></div>
+    <div class="success-msg" id="successMsg" style="display: none;">تم النسخ!</div>
+  </div>
+
+  <div class="error" id="errorMsg" style="display: none;"></div>
+
+  <footer class="footer">
+    صُنع بـ ❤️ باستخدام Groq AI
+  </footer>
+
+  <script src="popup.js"></script>
+</body>
+  </html>
